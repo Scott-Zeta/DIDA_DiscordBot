@@ -30,4 +30,21 @@ async def account_creation_date(ctx: discord.ApplicationContext, member: discord
 async def get_message_id(ctx: discord.ApplicationContext, message: discord.Message):  # message commands return the message
   await ctx.respond(f"Message ID: `{message.id}`")
 
+class MyView(discord.ui.View):
+  @discord.ui.button(label="Button 1", style=discord.ButtonStyle.primary)
+  async def button1(self, button, interaction):
+    await interaction.response.send_message("Button 1 clicked!")
+    self.disable_all_items()
+    await interaction.message.edit(view=self)
+
+  @discord.ui.button(label="Button 2", style=discord.ButtonStyle.success)
+  async def button2(self, button, interaction):
+    await interaction.response.send_message("Button 2 clicked!")
+    self.disable_all_items()
+    await interaction.message.edit(view=self)
+
+@bot.slash_command() # Create a slash command
+async def button(ctx: discord.ApplicationContext):
+  await ctx.respond("This is a button!", view=MyView()) # Send a message with our View class that contains the button
+
 bot.run(os.getenv('BOT_TOKEN')) # run the bot with the token
