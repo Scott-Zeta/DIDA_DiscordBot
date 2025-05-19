@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 import asyncio
+from services.image_caption import generate_caption
 
 class ImageCaption(commands.Cog):
     def __init__(self,bot):
@@ -20,14 +21,13 @@ class ImageCaption(commands.Cog):
         placeholder_messages = await asyncio.gather(*placeholder_tasks)
 
         # Step 2: Process each image concurrently and edit the placeholder message
-        async def process_image(attachment, placeholder_msg):
-            await asyncio.sleep(3)  # Replace with actual async API call
-            caption = f"Image caption for `{attachment.filename}`: This is a sample caption."
+        async def process_image(author, attachment, placeholder_msg):
+            caption = f"Description for image sent by `{author}`:{generate_caption(attachment.url, attachment.content_type)}"
             await placeholder_msg.edit(content=caption)
             
 
         processing_tasks = [
-            process_image(attachment, placeholder)
+            process_image(message.author.display_name, attachment, placeholder)
             for attachment, placeholder in zip(message.attachments, placeholder_messages)
         ]
 
