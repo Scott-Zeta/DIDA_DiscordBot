@@ -1,10 +1,11 @@
 import discord
 from config import BOT_TOKEN
 
-bot = discord.Bot()
+bot = discord.Bot(intents=discord.Intents.all())
 
 # Cogs List
-cogs_list = ["cogs.health_check"]
+cogs_list = ["cogs.health_check",
+             "cogs.image_caption"]
 
 @bot.event
 async def on_ready():
