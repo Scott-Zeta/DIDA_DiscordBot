@@ -19,9 +19,13 @@ def generate_caption(image_url, image_type):
     image = types.Part.from_bytes(data=image_bytes, mime_type=image_type)
     
     client = genai.Client(api_key=GEMINI_API_KEY)
-    response = client.models.generate_content(
-        model="gemini-2.0-flash-exp",
-        contents=["Generate the image description for accessibility, no more than 150 tokens", image],
-        )
-    
-    return response.text
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.0-flash-exp",
+            contents=["Generate the image description for accessibility, no more than 150 tokens", image],
+            )
+
+        return response.text
+    except Exception as e:
+        print(f"Error generating caption: {e}")
+        return "There is an Error when generating caption"
