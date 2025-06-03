@@ -2,6 +2,9 @@ import discord
 from discord.ext import commands
 import asyncio
 from services.image_caption import generate_caption
+from utils.logger import Logger
+
+log = Logger("cogs.image_caption")
 
 class ImageCaption(commands.Cog):
     def __init__(self,bot):

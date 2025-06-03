@@ -1,8 +1,11 @@
 from google import genai
 from google.genai import types
 from config import GEMINI_API_KEY
+from utils.logger import Logger
 
 import requests
+
+log = Logger("services.image_caption")
 
 def generate_caption(image_url, image_type):
     """
