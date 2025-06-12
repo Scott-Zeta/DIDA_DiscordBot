@@ -3,6 +3,7 @@ from discord.ext import commands
 import asyncio
 from services.image_caption import generate_caption
 from utils.logger import Logger
+from utils.rate_limiter import rate_limit
 
 log = Logger("cogs.image_caption")
 
@@ -11,6 +12,7 @@ class ImageCaption(commands.Cog):
         self.bot = bot
     
     @commands.Cog.listener()
+    @rate_limit(cooldown_seconds=30, max_uses=3, feature_name="Image Caption")
     async def on_message(self, message):
         if message.author.bot or not message.attachments:
             return
