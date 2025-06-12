@@ -7,6 +7,10 @@ from utils.rate_limiter import rate_limit
 
 log = Logger("cogs.image_caption")
 
+# Constants
+MAX_FILE_SIZE_MB = 20
+SUPPORTED_FORMATS = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
+
 class ImageCaption(commands.Cog):
     def __init__(self,bot):
         self.bot = bot
@@ -17,9 +21,21 @@ class ImageCaption(commands.Cog):
         if message.author.bot or not message.attachments:
             return
 
+        # Filter only supported image attachments
+        valid_attachments = [
+            attachment for attachment in message.attachments
+            if attachment.content_type in SUPPORTED_FORMATS 
+            and attachment.size <= MAX_FILE_SIZE_MB * 1024 * 1024
+        ]
+        
+        if not valid_attachments:
+            return
+            
+        log.info(f"Processing {len(valid_attachments)} images from {message.author.display_name}")
+        
         # Step 1: Send all placeholder messages immediately
         placeholder_tasks = []
-        for attachment in message.attachments:
+        for attachment in valid_attachments:
             task = message.channel.send(f"Processing image `{attachment.filename}`...")
             placeholder_tasks.append(task)
 
@@ -43,7 +59,7 @@ class ImageCaption(commands.Cog):
 
         processing_tasks = [
             process_image(message.author.display_name, attachment, placeholder)
-            for attachment, placeholder in zip(message.attachments, placeholder_messages)
+            for attachment, placeholder in zip(valid_attachments, placeholder_messages)
         ]
 
         await asyncio.gather(*processing_tasks)
