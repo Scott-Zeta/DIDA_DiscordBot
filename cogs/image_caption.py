@@ -25,8 +25,18 @@ class ImageCaption(commands.Cog):
 
         # Step 2: Process each image concurrently and edit the placeholder message
         async def process_image(author, attachment, placeholder_msg):
-            caption = f"Description for image sent by `{author}`:{generate_caption(attachment.url, attachment.content_type)}"
-            await placeholder_msg.edit(content=caption)
+            try:
+                await placeholder_msg.edit(content=f"🔄 Processing image `{attachment.filename}`...")
+                
+                caption = await generate_caption(attachment.url, attachment.content_type)
+                
+                formatted_caption = f"📷 **Image by {author}:**\n{caption}"
+                await placeholder_msg.edit(content=formatted_caption)
+                log.info(f"Successfully captioned image {attachment.filename}")
+                
+            except Exception as e:
+                log.error(f"Failed to process image {attachment.filename}: {e}")
+                await placeholder_msg.edit(content=f"❌ Failed to process image `{attachment.filename}`. Error: {str(e)[:100]}")
             
 
         processing_tasks = [
